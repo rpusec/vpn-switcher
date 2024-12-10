@@ -7,7 +7,7 @@ module.exports = {
         if(!connRes.name) return await connect(name);
         
         let discRes = await disconnect(connRes.name);
-        if(discRes.state == 'error') return discRes;
+        if(discRes.state == 'error' || connRes.name == name) return discRes;
 
         return await connect(name);
     },
@@ -60,11 +60,6 @@ function disconnect(name){
 
 function connect(name){
     return new Promise(resolve => {
-        exec(`rasphone -d "${name}"`, async () => {
-            console.log('abc123');
-            let res = await getCurrentConnection();
-            console.log(res);
-            resolve(res);
-        });
+        exec(`rasphone -d "${name}"`, async () => resolve(await getCurrentConnection()));
     });
 }

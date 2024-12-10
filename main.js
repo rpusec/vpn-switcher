@@ -59,32 +59,15 @@ ipcMain.on('open-devtools', () => {
     win?.webContents.openDevTools();
 })
 
-ipcMain.on('connect', async (e, name) => {
-    let result = await connect(name);
-
-    if(result.state == 'error'){
-        win?.webContents.send('error', result.message);
-        return;
-    }
-
-    if(result.state == 'vpn-connected'){
-        win?.webContents.send('vpn-connected', result.name);
-        return;
-    }
-
-    if(result.state == 'no-vpn-connected'){
-        win?.webContents.send('no-vpn-connected');
-        return;
-    }
-})
+ipcMain.on('connect', async (e, name) => updateStateUI(await connect(name)));
 
 function updateConfig(content){
     writeFileSync('config.json', JSON.stringify(content, null, '\t'), 'utf8');
 }
 
-setTimeout(async () => {
-    let result = await getCurrentConnection();
-    
+setTimeout(async () => updateStateUI(await getCurrentConnection()), 0);
+
+function updateStateUI(result){
     if(result.state == 'error'){
         win?.webContents.send('error', result.message);
         return;
@@ -95,8 +78,8 @@ setTimeout(async () => {
         return;
     }
 
-    if(result.state == 'no-vpn-connected'){
+    if(['no-vpn-connected', 'vpn-disconnected'].includes(result.state)){
         win?.webContents.send('no-vpn-connected');
         return;
     }
-}, 0);
+}
