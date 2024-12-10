@@ -60,18 +60,11 @@ function disconnect(name){
 
 function connect(name){
     return new Promise(resolve => {
-        exec(`rasdial ${name}`, (error, stdout, stderr) => {
-            if (error) {
-                resolve({state: 'error', message: error.message});
-                return;
-            }
-
-            if (stderr) {
-                resolve({state: 'error', message: stderr});
-                return;
-            }
-
-            resolve({state: 'vpn-connected', name});
+        exec(`rasphone -d "${name}"`, async () => {
+            console.log('abc123');
+            let res = await getCurrentConnection();
+            console.log(res);
+            resolve(res);
         });
     });
 }

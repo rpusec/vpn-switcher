@@ -71,6 +71,11 @@ ipcMain.on('connect', async (e, name) => {
         win?.webContents.send('vpn-connected', result.name);
         return;
     }
+
+    if(result.state == 'no-vpn-connected'){
+        win?.webContents.send('no-vpn-connected');
+        return;
+    }
 })
 
 function updateConfig(content){

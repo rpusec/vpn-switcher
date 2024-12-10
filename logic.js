@@ -22,7 +22,6 @@ elemMain.addEventListener("click", event => {
     if(!elem.matches(".item")) return;
 
     allItems.forEach(node => node.classList.remove('active'));
-    // elem.classList.add('active');
 
     setReqMsg(true);
     ipcRenderer.send('connect', elem.dataset.name);
