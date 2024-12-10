@@ -18,6 +18,10 @@ body, html{
     padding: 3px;
 }
 
+#main.disabled{
+    pointer-events: none;
+}
+
 #main:after{
     display: block;
     content: "";

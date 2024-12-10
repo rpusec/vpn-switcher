@@ -11,7 +11,7 @@ let requestingMsg = true;
 config.forEach(item => {
     item.name = item.name.toLowerCase();
     elemMain.insertAdjacentHTML('beforeend', /*html*/`
-        <div class="item ${item.name}">${item.name}</div>
+        <div class="item ${item.name}" data-name="${item.name}">${item.name}</div>
     `);
 });
 
@@ -22,8 +22,10 @@ elemMain.addEventListener("click", event => {
     if(!elem.matches(".item")) return;
 
     allItems.forEach(node => node.classList.remove('active'));
+    // elem.classList.add('active');
 
-    elem.classList.add('active');
+    setReqMsg(true);
+    ipcRenderer.send('connect', elem.dataset.name);
 });
 
 setTimeout(onResize, 0);
@@ -69,8 +71,12 @@ function setReqMsg(b){
     
     if(requestingMsg){
         elemReqMsg.classList.remove('hidden');
+        if(!elemMain.classList.contains('disabled')) elemMain.classList.add('disabled');
         return;
     }
 
-    if(!elemReqMsg.classList.contains('hidden')) elemReqMsg.classList.add('hidden');
+    if(elemReqMsg.classList.contains('hidden')) return;
+        
+    elemReqMsg.classList.add('hidden');
+    elemMain.classList.remove('disabled');
 }

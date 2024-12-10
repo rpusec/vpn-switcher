@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { existsSync, writeFileSync, readFileSync } = require('original-fs');
-const { getCurrencConnection } = require('./vpn-handler.js');
+const { getCurrentConnection, connect } = require('./vpn-handler.js');
 
 if(!existsSync("config.json")) updateConfig({vpns: [], bounds: {x: 300, y: 300}});
 
@@ -59,12 +59,26 @@ ipcMain.on('open-devtools', () => {
     win?.webContents.openDevTools();
 })
 
+ipcMain.on('connect', async (e, name) => {
+    let result = await connect(name);
+
+    if(result.state == 'error'){
+        win?.webContents.send('error', result.message);
+        return;
+    }
+
+    if(result.state == 'vpn-connected'){
+        win?.webContents.send('vpn-connected', result.name);
+        return;
+    }
+})
+
 function updateConfig(content){
     writeFileSync('config.json', JSON.stringify(content, null, '\t'), 'utf8');
 }
 
 setTimeout(async () => {
-    let result = await getCurrencConnection();
+    let result = await getCurrentConnection();
     
     if(result.state == 'error'){
         win?.webContents.send('error', result.message);
@@ -80,6 +94,4 @@ setTimeout(async () => {
         win?.webContents.send('no-vpn-connected');
         return;
     }
-
-    console.log(result);
-}, 1000);
+}, 0);
