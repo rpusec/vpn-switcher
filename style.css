@@ -72,3 +72,15 @@ body, html{
 #main .item.active:after{
     background-color: #5cffa8;
 }
+
+#error-message{
+    background-color: rgb(255, 88, 88);
+    color: #fff;
+    width: 100%;
+    font-size: 12px;
+    padding: 5px;
+}
+
+#error-message:not(.active){
+    display: none;
+}

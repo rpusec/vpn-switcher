@@ -6,6 +6,7 @@ if(!existsSync("config.json")) updateConfig({vpns: [], bounds: {x: 300, y: 300}}
 let config = JSON.parse(readFileSync('config.json', 'utf8'));
 
 let win = null;
+let errHeight = 0;
 
 app.whenReady().then(() => {
     win = new BrowserWindow({
@@ -30,7 +31,7 @@ app.whenReady().then(() => {
         clearTimeout(t);
         t = setTimeout(() => {
             const bounds = win.getBounds();
-            config.bounds = {x: bounds.x, y: bounds.y};
+            config.bounds = {x: bounds.x, y: bounds.y + errHeight};
             updateConfig(config);
         }, 1000);
     });
@@ -43,11 +44,13 @@ app.on('window-all-closed', () => {
 ipcMain.on('resize', (e, props) => {
     if(!win) return;
 
+    errHeight = props.errHeight;
+
     win.setBounds({
         x: config.bounds.x,
-        y: config.bounds.y,
+        y: config.bounds.y - props.errHeight,
         width: props.width, 
-        height: props.height,
+        height: props.height + props.errHeight,
     });
 })
 
@@ -58,3 +61,7 @@ ipcMain.on('open-devtools', () => {
 function updateConfig(content){
     writeFileSync('config.json', JSON.stringify(content, null, '\t'), 'utf8');
 }
+
+setTimeout(() => {
+    win?.webContents.send('error', 'some error messagesome error messagesome error message');
+}, 1000);
