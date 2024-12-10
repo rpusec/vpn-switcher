@@ -1,3 +1,4 @@
+const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('config.json'));
 
@@ -19,3 +20,11 @@ elemMain.addEventListener("click", event => {
 
     elem.classList.add('active');
 });
+
+setTimeout(() => {
+    ipcRenderer.send('resize', {width: elemMain.clientWidth, height: elemMain.clientHeight});
+}, 0);
+
+window.onkeydown = e => {
+    if(e.key == 'F12') ipcRenderer.send('open-devtools');
+}
