@@ -11,6 +11,8 @@ app.whenReady().then(() => {
     win = new BrowserWindow({
         width: 150,
         height: 40,
+        x: config.bounds.x,
+        y: config.bounds.y,
         frame: false,
         alwaysOnTop: true,
         transparent: true,
@@ -32,8 +34,6 @@ app.whenReady().then(() => {
             updateConfig(config);
         }, 1000);
     });
-
-    win.setPosition(config.bounds.x, config.bounds.y);
 });
 
 app.on('window-all-closed', () => {
@@ -43,7 +43,12 @@ app.on('window-all-closed', () => {
 ipcMain.on('resize', (e, props) => {
     if(!win) return;
 
-    win.setSize(props.width, props.height);
+    win.setBounds({
+        x: config.bounds.x,
+        y: config.bounds.y,
+        width: props.width, 
+        height: props.height,
+    });
 })
 
 ipcMain.on('open-devtools', () => {
