@@ -1,0 +1,14 @@
+{
+  "name": "vpn-switcher",
+  "version": "1.0.0",
+  "description": "electron app for switching between two vpns",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^33.2.1"
+  }
+}
