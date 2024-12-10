@@ -2,16 +2,20 @@ const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('config.json')).vpns;
 
+const elemReqMsg = document.getElementById('msg-outer');
 const elemMain = document.getElementById("main");
 const elemErrMsg = document.getElementById("error-message");
 
+let requestingMsg = true;
+
 config.forEach(item => {
+    item.name = item.name.toLowerCase();
     elemMain.insertAdjacentHTML('beforeend', /*html*/`
-        <div class="item">${item.name}</div>
+        <div class="item ${item.name}">${item.name}</div>
     `);
 });
 
-const allItems = document.querySelectorAll(".item");
+const allItems = [...document.querySelectorAll(".item")];
 
 elemMain.addEventListener("click", event => {
     let elem = event.target;
@@ -37,8 +41,36 @@ ipcRenderer.on('error', (e, msg) => {
     elemErrMsg.querySelector('.msg').innerHTML = msg;
     if(!elemErrMsg.classList.contains('active')) elemErrMsg.classList.add('active');
     onResize();
+    setReqMsg(false);
+});
+
+ipcRenderer.on('vpn-connected', (e, name) => {
+    let vpnElem = allItems.find(x => x.classList.contains(name));
+    if(!vpnElem) return;
+
+    vpnElem.classList.add('active');
+    setReqMsg(false);
+});
+
+ipcRenderer.on('no-vpn-connected', () => {
+    setReqMsg(false);
 });
 
 function onResize(){
-    ipcRenderer.send('resize', {width: elemMain.clientWidth, height: elemMain.clientHeight, errHeight: elemErrMsg.clientHeight});
+    ipcRenderer.send('resize', {
+        width: elemMain.clientWidth, 
+        height: elemMain.clientHeight, 
+        errHeight: elemErrMsg.clientHeight,
+    });
+}
+
+function setReqMsg(b){
+    requestingMsg = b;
+    
+    if(requestingMsg){
+        elemReqMsg.classList.remove('hidden');
+        return;
+    }
+
+    if(!elemReqMsg.classList.contains('hidden')) elemReqMsg.classList.add('hidden');
 }

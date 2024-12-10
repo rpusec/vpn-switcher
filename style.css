@@ -92,4 +92,23 @@ body, html{
     right:5px;
     font-size: 20px;
     cursor: pointer;
-};
+}
+
+#msg-outer{
+    color: #fff;
+    position: fixed;
+    z-index: 10;
+    top:0;
+    left:0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0000008f;
+    color: #fff; 
+}
+
+#msg-outer.hidden{
+    display: none;
+}
