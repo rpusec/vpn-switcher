@@ -1,4 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { existsSync, writeFileSync, readFileSync } = require('original-fs');
+
+if(!existsSync("config.json")) updateConfig({vpns: [], bounds: {x: 300, y: 300}});
+
+let config = JSON.parse(readFileSync('config.json', 'utf8'));
 
 let win = null;
 
@@ -17,6 +22,18 @@ app.whenReady().then(() => {
     })
     
     win.loadFile('index.html');
+
+    let t;
+    win.on('move', e => {
+        clearTimeout(t);
+        t = setTimeout(() => {
+            const bounds = win.getBounds();
+            config.bounds = {x: bounds.x, y: bounds.y};
+            updateConfig(config);
+        }, 1000);
+    });
+
+    win.setPosition(config.bounds.x, config.bounds.y);
 });
 
 app.on('window-all-closed', () => {
@@ -32,3 +49,7 @@ ipcMain.on('resize', (e, props) => {
 ipcMain.on('open-devtools', () => {
     win?.webContents.openDevTools();
 })
+
+function updateConfig(content){
+    writeFileSync('config.json', JSON.stringify(content, null, '\t'), 'utf8');
+}
