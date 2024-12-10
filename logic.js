@@ -28,8 +28,13 @@ window.onkeydown = e => {
     if(e.key == 'F12') ipcRenderer.send('open-devtools');
 }
 
+elemErrMsg.querySelector('.close').addEventListener('click', () => {
+    elemErrMsg.classList.remove('active');
+    onResize();
+});
+
 ipcRenderer.on('error', (e, msg) => {
-    elemErrMsg.innerHTML = msg;
+    elemErrMsg.querySelector('.msg').innerHTML = msg;
     if(!elemErrMsg.classList.contains('active')) elemErrMsg.classList.add('active');
     onResize();
 });

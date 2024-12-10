@@ -74,13 +74,22 @@ body, html{
 }
 
 #error-message{
+    position:relative;
     background-color: rgb(255, 88, 88);
     color: #fff;
-    width: 100%;
+    width: calc(100vw - 20px);
     font-size: 12px;
-    padding: 5px;
+    padding: 10px;
 }
 
 #error-message:not(.active){
     display: none;
 }
+
+#error-message .close{
+    position:absolute;
+    top:0;
+    right:5px;
+    font-size: 20px;
+    cursor: pointer;
+};
