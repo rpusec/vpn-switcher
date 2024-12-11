@@ -42,7 +42,7 @@ if(scripts.length > 0){
 const allVpnItems = [...document.querySelectorAll(".item.vpn")];
 const allScriptItems = [...document.querySelectorAll(".item.script")];
 
-allScriptItems.forEach(scriptElem => scriptElem.dataset.enabledWhenActiveVpn && scriptElem.classList.add('disabled'));
+disableAllScriptBtnsWithVPN();
 
 elemVpns.addEventListener("click", event => {
     let elem = event.target;
@@ -105,6 +105,7 @@ ipcRenderer.on('vpn-connected', (e, name, discrete) => {
 ipcRenderer.on('no-vpn-connected', (e, discrete) => {
     if(discrete && requestingMsg) return;
     removeActiveClassFromBtns();
+    disableAllScriptBtnsWithVPN();
     setReqMsg(false);
 });
 
@@ -153,4 +154,8 @@ function scriptBtnEndRun(name){
     if(!scriptBtn) return;
 
     scriptBtn.classList.remove('running');
+}
+
+function disableAllScriptBtnsWithVPN(){
+    allScriptItems.forEach(scriptElem => scriptElem.dataset.enabledWhenActiveVpn && scriptElem.classList.add('disabled'));
 }
