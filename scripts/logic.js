@@ -33,6 +33,7 @@ if(scripts.length > 0){
                 class="item script" 
                 data-name="${item.name}" 
                 data-enabled-when-active-vpn="${item.enabledWhenActiveVPN}"
+                data-path="${item.path}"
             >${item.name}</div>
         `);
     });
@@ -41,7 +42,7 @@ if(scripts.length > 0){
 const allVpnItems = [...document.querySelectorAll(".item.vpn")];
 const allScriptItems = [...document.querySelectorAll(".item.script")];
 
-allScriptItems.forEach(scriptElem => scriptElem.classList.add('disabled'));
+allScriptItems.forEach(scriptElem => scriptElem.dataset.enabledWhenActiveVpn && scriptElem.classList.add('disabled'));
 
 elemVpns.addEventListener("click", event => {
     let elem = event.target;
@@ -51,6 +52,15 @@ elemVpns.addEventListener("click", event => {
 
     setReqMsg(true);
     ipcRenderer.send('connect', elem.dataset.name);
+});
+
+elemScripts.addEventListener("click", event => {
+    let elem = event.target;
+    if(!elem.matches(".item.script")) return;
+
+    if(!elem.classList.contains("running")) elem.classList.add("running");
+
+    ipcRenderer.send('run-script', elem.dataset.name, elem.dataset.path);
 });
 
 setTimeout(onResize, 0);
@@ -65,9 +75,7 @@ elemErrMsg.querySelector('.close').addEventListener('click', () => {
 });
 
 ipcRenderer.on('error', (e, msg) => {
-    elemErrMsg.querySelector('.msg').innerHTML = msg;
-    if(!elemErrMsg.classList.contains('active')) elemErrMsg.classList.add('active');
-    onResize();
+    setErrorMsg(msg);
     setReqMsg(false);
 });
 
@@ -125,4 +133,24 @@ function setReqMsg(b){
         
     elemReqMsg.classList.add('hidden');
     elemMain.classList.remove('disabled');
+}
+
+ipcRenderer.on('script-resolved', (e, name) => scriptBtnEndRun(name));
+
+ipcRenderer.on('script-error', (e, msg, name) => {
+    setErrorMsg(msg);
+    scriptBtnEndRun(name);
+});
+
+function setErrorMsg(msg){
+    elemErrMsg.querySelector('.msg').innerHTML = msg;
+    if(!elemErrMsg.classList.contains('active')) elemErrMsg.classList.add('active');
+    onResize();
+}
+
+function scriptBtnEndRun(name){
+    let scriptBtn = allScriptItems.find(x => x.dataset.name == name);
+    if(!scriptBtn) return;
+
+    scriptBtn.classList.remove('running');
 }

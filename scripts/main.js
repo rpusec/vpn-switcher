@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { existsSync, writeFileSync, readFileSync } = require('original-fs');
 const { getCurrentConnection, connect } = require('./vpn-handler.js');
+const { run } = require('./script-handler.js');
 
 if(!existsSync("config.json")) updateConfig({vpns: [], scripts: [], bounds: {x: 300, y: 300}});
 
@@ -89,3 +90,23 @@ async function sendKeepAlive(discrete){
 
     setTimeout(() => sendKeepAlive(true), 5000);
 }
+
+ipcMain.on('run-script', async (e, name, scriptPath) => {
+
+    let path = scriptPath.substring(0, scriptPath.lastIndexOf('\\') + 1);
+    let scriptName = scriptPath.substring(scriptPath.lastIndexOf('\\') + 1, scriptPath.length);
+    console.log(path);
+    console.log(scriptName);
+
+    const result = await run(`cd ${path} && node ${scriptName}`);
+
+    if(result.state == 'error'){
+        win?.webContents.send('script-error', result.message, name);
+        return;
+    }
+
+    if(result.state == 'script-resolved'){
+        win?.webContents.send('script-resolved', name);
+        return;
+    }
+});

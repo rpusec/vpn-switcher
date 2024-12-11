@@ -38,7 +38,8 @@ body, html{
     height: 22px;
 }
 
-#scripts .item.disabled{
+#scripts .item.disabled,
+#scripts .item.running{
     opacity: .25;
     pointer-events: none;
 }
