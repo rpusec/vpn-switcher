@@ -38,6 +38,11 @@ body, html{
     height: 22px;
 }
 
+#scripts .item.disabled{
+    opacity: .25;
+    pointer-events: none;
+}
+
 .no-vpns-msg{
     color: #fff;
     font-size: 12px;

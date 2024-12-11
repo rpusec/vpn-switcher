@@ -29,12 +29,19 @@ else {
 if(scripts.length > 0){
     scripts.forEach(item => {
         elemScripts.insertAdjacentHTML('beforeend', /*html*/`
-            <div class="item script" data-name="${item.name}">${item.name}</div>
+            <div 
+                class="item script" 
+                data-name="${item.name}" 
+                data-enabled-when-active-vpn="${item.enabledWhenActiveVPN}"
+            >${item.name}</div>
         `);
     });
 }
 
 const allVpnItems = [...document.querySelectorAll(".item.vpn")];
+const allScriptItems = [...document.querySelectorAll(".item.script")];
+
+allScriptItems.forEach(scriptElem => scriptElem.classList.add('disabled'));
 
 elemVpns.addEventListener("click", event => {
     let elem = event.target;
@@ -74,11 +81,22 @@ ipcRenderer.on('vpn-connected', (e, name, discrete) => {
 
     vpnElem.classList.add('active');
     setReqMsg(false);
+
+    allScriptItems.forEach(scriptElem => {
+        let enabledIfVpn = scriptElem.dataset.enabledWhenActiveVpn;
+        if(!enabledIfVpn) {
+            scriptElem.classList.remove('disabled');
+            return;
+        }
+
+        if(name == enabledIfVpn) scriptElem.classList.remove('disabled');
+        else if(!scriptElem.classList.contains('disabled')) scriptElem.classList.add('disabled');
+    });
 });
 
 ipcRenderer.on('no-vpn-connected', (e, discrete) => {
     if(discrete && requestingMsg) return;
-    allVpnItems.forEach(node => node.classList.remove('active'));
+    removeActiveClassFromBtns();
     setReqMsg(false);
 });
 
