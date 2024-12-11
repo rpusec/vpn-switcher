@@ -1,9 +1,14 @@
 const { ipcRenderer } = require('electron');
 const fs = require('fs');
-const vpns = JSON.parse(fs.readFileSync('config.json')).vpns;
+
+const config = JSON.parse(fs.readFileSync('config.json'));
+const vpns = config.vpns;
+const scripts = config.scripts;
 
 const elemReqMsg = document.getElementById('msg-outer');
 const elemMain = document.getElementById("main");
+const elemVpns = document.getElementById("vpns");
+const elemScripts = document.getElementById("scripts");
 const elemErrMsg = document.getElementById("error-message");
 
 let requestingMsg = true;
@@ -11,21 +16,29 @@ let requestingMsg = true;
 if(vpns.length > 0){
     vpns.forEach(name => {
         name = name.toLowerCase();
-        elemMain.insertAdjacentHTML('beforeend', /*html*/`
-            <div class="item" data-name="${name}">${name}</div>
+        elemVpns.insertAdjacentHTML('beforeend', /*html*/`
+            <div class="item vpn" data-name="${name}">${name}</div>
         `);
     });
 }
 else {
-    elemMain.insertAdjacentHTML('beforeend', /*html*/`<div class="no-vpns-msg">No VPNs Configured</div>`);
+    elemVpns.insertAdjacentHTML('beforeend', /*html*/`<div class="no-vpns-msg">No VPNs Configured</div>`);
     setReqMsg(false);
 }
 
-const allItems = [...document.querySelectorAll(".item")];
+if(scripts.length > 0){
+    scripts.forEach(item => {
+        elemScripts.insertAdjacentHTML('beforeend', /*html*/`
+            <div class="item script" data-name="${item.name}">${item.name}</div>
+        `);
+    });
+}
 
-elemMain.addEventListener("click", event => {
+const allVpnItems = [...document.querySelectorAll(".item.vpn")];
+
+elemVpns.addEventListener("click", event => {
     let elem = event.target;
-    if(!elem.matches(".item")) return;
+    if(!elem.matches(".item.vpn")) return;
 
     removeActiveClassFromBtns();
 
@@ -56,7 +69,7 @@ ipcRenderer.on('vpn-connected', (e, name, discrete) => {
 
     removeActiveClassFromBtns();
 
-    let vpnElem = allItems.find(x => x.dataset['name'] == name);
+    let vpnElem = allVpnItems.find(x => x.dataset['name'] == name);
     if(!vpnElem) return;
 
     vpnElem.classList.add('active');
@@ -65,12 +78,12 @@ ipcRenderer.on('vpn-connected', (e, name, discrete) => {
 
 ipcRenderer.on('no-vpn-connected', (e, discrete) => {
     if(discrete && requestingMsg) return;
-    allItems.forEach(node => node.classList.remove('active'));
+    allVpnItems.forEach(node => node.classList.remove('active'));
     setReqMsg(false);
 });
 
 function removeActiveClassFromBtns(){
-    allItems.forEach(node => node.classList.remove('active'));
+    allVpnItems.forEach(node => node.classList.remove('active'));
 }
 
 function onResize(){

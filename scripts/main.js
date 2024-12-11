@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const { existsSync, writeFileSync, readFileSync } = require('original-fs');
 const { getCurrentConnection, connect } = require('./vpn-handler.js');
 
-if(!existsSync("config.json")) updateConfig({vpns: [], bounds: {x: 300, y: 300}});
+if(!existsSync("config.json")) updateConfig({vpns: [], scripts: [], bounds: {x: 300, y: 300}});
 
 let config = JSON.parse(readFileSync('config.json', 'utf8'));
 
