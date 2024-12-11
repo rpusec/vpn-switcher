@@ -59,27 +59,33 @@ ipcMain.on('open-devtools', () => {
     win?.webContents.openDevTools();
 })
 
-ipcMain.on('connect', async (e, name) => updateStateUI(await connect(name)));
+ipcMain.on('connect', async (e, name) => updateStateUI(await connect(name), false));
 
 function updateConfig(content){
     writeFileSync('config.json', JSON.stringify(content, null, '\t'), 'utf8');
 }
 
-setTimeout(async () => updateStateUI(await getCurrentConnection()), 0);
+setTimeout(() => sendKeepAlive(false), 0);
 
-function updateStateUI(result){
+function updateStateUI(result, discrete){
     if(result.state == 'error'){
         win?.webContents.send('error', result.message);
         return;
     }
 
     if(result.state == 'vpn-connected'){
-        win?.webContents.send('vpn-connected', result.name);
+        win?.webContents.send('vpn-connected', result.name, discrete);
         return;
     }
 
     if(['no-vpn-connected', 'vpn-disconnected'].includes(result.state)){
-        win?.webContents.send('no-vpn-connected');
+        win?.webContents.send('no-vpn-connected', discrete);
         return;
     }
+}
+
+async function sendKeepAlive(discrete){
+    updateStateUI(await getCurrentConnection(), discrete);
+
+    setTimeout(() => sendKeepAlive(true), 5000);
 }

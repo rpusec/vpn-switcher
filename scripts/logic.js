@@ -21,7 +21,7 @@ elemMain.addEventListener("click", event => {
     let elem = event.target;
     if(!elem.matches(".item")) return;
 
-    allItems.forEach(node => node.classList.remove('active'));
+    removeActiveClassFromBtns();
 
     setReqMsg(true);
     ipcRenderer.send('connect', elem.dataset.name);
@@ -45,7 +45,11 @@ ipcRenderer.on('error', (e, msg) => {
     setReqMsg(false);
 });
 
-ipcRenderer.on('vpn-connected', (e, name) => {
+ipcRenderer.on('vpn-connected', (e, name, discrete) => {
+    if(discrete && requestingMsg) return;
+
+    removeActiveClassFromBtns();
+
     let vpnElem = allItems.find(x => x.classList.contains(name));
     if(!vpnElem) return;
 
@@ -53,9 +57,15 @@ ipcRenderer.on('vpn-connected', (e, name) => {
     setReqMsg(false);
 });
 
-ipcRenderer.on('no-vpn-connected', () => {
+ipcRenderer.on('no-vpn-connected', (e, discrete) => {
+    if(discrete && requestingMsg) return;
+    allItems.forEach(node => node.classList.remove('active'));
     setReqMsg(false);
 });
+
+function removeActiveClassFromBtns(){
+    allItems.forEach(node => node.classList.remove('active'));
+}
 
 function onResize(){
     ipcRenderer.send('resize', {
