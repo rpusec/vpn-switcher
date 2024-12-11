@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron');
 const fs = require('fs');
-const config = JSON.parse(fs.readFileSync('config.json')).vpns;
+const vpns = JSON.parse(fs.readFileSync('config.json')).vpns;
 
 const elemReqMsg = document.getElementById('msg-outer');
 const elemMain = document.getElementById("main");
@@ -8,12 +8,18 @@ const elemErrMsg = document.getElementById("error-message");
 
 let requestingMsg = true;
 
-config.forEach(item => {
-    item.name = item.name.toLowerCase();
-    elemMain.insertAdjacentHTML('beforeend', /*html*/`
-        <div class="item ${item.name}" data-name="${item.name}">${item.name}</div>
-    `);
-});
+if(vpns.length > 0){
+    vpns.forEach(name => {
+        name = name.toLowerCase();
+        elemMain.insertAdjacentHTML('beforeend', /*html*/`
+            <div class="item" data-name="${name}">${name}</div>
+        `);
+    });
+}
+else {
+    elemMain.insertAdjacentHTML('beforeend', /*html*/`<div class="no-vpns-msg">No VPNs Configured</div>`);
+    setReqMsg(false);
+}
 
 const allItems = [...document.querySelectorAll(".item")];
 
@@ -50,7 +56,7 @@ ipcRenderer.on('vpn-connected', (e, name, discrete) => {
 
     removeActiveClassFromBtns();
 
-    let vpnElem = allItems.find(x => x.classList.contains(name));
+    let vpnElem = allItems.find(x => x.dataset['name'] == name);
     if(!vpnElem) return;
 
     vpnElem.classList.add('active');

@@ -65,7 +65,7 @@ function updateConfig(content){
     writeFileSync('config.json', JSON.stringify(content, null, '\t'), 'utf8');
 }
 
-setTimeout(() => sendKeepAlive(false), 0);
+if(config.vpns.length > 0) setTimeout(() => sendKeepAlive(false), 0);
 
 function updateStateUI(result, discrete){
     if(result.state == 'error'){

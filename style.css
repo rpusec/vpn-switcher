@@ -18,6 +18,12 @@ body, html{
     padding: 3px;
 }
 
+.no-vpns-msg{
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
+}
+
 #main.disabled{
     pointer-events: none;
 }
