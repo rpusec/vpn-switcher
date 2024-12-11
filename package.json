@@ -2,7 +2,7 @@
   "name": "vpn-switcher",
   "version": "1.0.0",
   "description": "electron app for switching between two vpns",
-  "main": "main.js",
+  "main": "scripts/main.js",
   "scripts": {
     "start": "electron ."
   },
