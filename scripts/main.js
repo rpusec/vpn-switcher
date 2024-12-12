@@ -37,6 +37,21 @@ app.whenReady().then(() => {
             updateConfig(config);
         }, 1000);
     });
+
+    // Monitor focus and visibility
+    win.on('minimize', () => {
+        setTimeout(() => {
+            win.setAlwaysOnTop(true); // Reapply always on top
+            win.restore();           // Restore the window if minimized
+        }, 100);
+    });
+
+    win.on('blur', () => {
+        // Reapply always on top after losing focus
+        setTimeout(() => {
+            win.setAlwaysOnTop(true);
+        }, 100);
+    });
 });
 
 app.on('window-all-closed', () => {
