@@ -54,3 +54,6 @@ This is a sample of the file:
 ## Screenshots
 ![App Screenshot](readme-assets/screenshot1.png)  
 ![App Screenshot](readme-assets/screenshot2.png)
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
