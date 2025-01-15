@@ -4,7 +4,7 @@
 
 # VPN Switcher
 
-This application simplifies switching between VPNs, saving time and improving workflow. Ideal for anyone who uses to multiple VPNs.
+This application simplifies switching between VPNs, saving time and improving workflow. Ideal for anyone who uses multiple VPNs.
 
 ## Features
 
