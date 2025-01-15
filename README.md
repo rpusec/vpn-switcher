@@ -42,17 +42,14 @@ This is a sample of the file:
 }
 ```
 
-### vpns
-An array of strings which represents the VPN names configured in Windows' VPN settings. 
+`vpns` An array of strings which represents the VPN names configured in Windows' VPN settings. 
 
-### scripts
-An array of additional scripts that you can execute directly within the application. 
+`scripts` An array of additional scripts that you can execute directly within the application. 
  * `name` Represents the display name of the script on the application's UI.
  * `path` The path to the script.
  * `enabledWhenActiveVPN` Ensures that the script can only be executed when the specified VPN is connected. Default value is null.
 
-### bounds
-This is where the application stores its position on the user's screen. These values are changed automatically as you're moving the application window around. When the application is relaunched, it'll be positioned at these coordinates. 
+`bounds` This is where the application stores its position on the user's screen. These values are changed automatically as you're moving the application window around. When the application is relaunched, it'll be positioned at these coordinates. 
 
 ## Screenshots
 ![App Screenshot](readme-assets/screenshot1.png)  
