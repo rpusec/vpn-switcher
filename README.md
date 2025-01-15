@@ -54,4 +54,6 @@ An array of additional scripts that you can execute directly within the applicat
 ### bounds
 This is where the application stores its position on the user's screen. These values are changed automatically as you're moving the application window around. When the application is relaunched, it'll be positioned at these coordinates. 
 
-## Example
+## Screenshots
+![App Screenshot](readme-assets/screenshot1.png)  
+![App Screenshot](readme-assets/screenshot2.png)
