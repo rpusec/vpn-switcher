@@ -14,7 +14,7 @@ This application simplifies switching between VPNs, saving time and improving wo
 
 ## Installation
 
-**Windows Users**: You can download the latest build of the application from the [Releases](https://github.com/rpusec/vpn-switcher/releases) section. Run `vpn-switcher.exe` from the root directory. 
+**Windows Users**: You can download the latest build of the application from the [Releases](https://github.com/rpusec/vpn-switcher/releases) section. Run `vpn-switcher.exe` from the root directory.  
 **Other Platforms**: Follow the instructions below to build the application manually.
 
 1. Ensure [Node.js](https://nodejs.org/) and [NPM](https://www.npmjs.com/) are installed.
