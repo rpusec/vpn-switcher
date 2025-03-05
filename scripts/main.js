@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const { existsSync, writeFileSync, readFileSync } = require('original-fs');
 const { getCurrentConnection, connect } = require('./vpn-handler.js');
 const { run } = require('./script-handler.js');
@@ -11,11 +11,17 @@ let win = null;
 let errHeight = 0;
 
 app.whenReady().then(() => {
+    const primaryDisplay = screen.getPrimaryDisplay();
+    const { width, height } = primaryDisplay.workAreaSize;
+
+    let posX = config.bounds.x;
+    let posY = config.bounds.y;
+
     win = new BrowserWindow({
         width: 150,
         height: 40,
-        x: config.bounds.x,
-        y: config.bounds.y,
+        x: posX,
+        y: posY,
         frame: false,
         alwaysOnTop: true,
         transparent: true,
@@ -28,8 +34,24 @@ app.whenReady().then(() => {
     
     win.loadFile('index.html');
 
+    win.webContents.on('did-finish-load', () => {
+        setTimeout(() => {
+            let winBounds = win.getBounds();
+            if(width < posX + winBounds.x + winBounds.width || height < posY + winBounds.y + winBounds.height){
+                posX = width - winBounds.width;
+                posY = height - winBounds.height;
+                win.setBounds({
+                    x: posX, 
+                    y: posY, 
+                    width: winBounds.width, 
+                    height: winBounds.height,
+                });
+            }
+        }, 100);
+    });
+
     let t;
-    win.on('move', e => {
+    win.on('move', () => {
         clearTimeout(t);
         t = setTimeout(() => {
             const bounds = win.getBounds();
