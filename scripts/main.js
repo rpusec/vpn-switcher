@@ -10,18 +10,20 @@ let config = JSON.parse(readFileSync('config.json', 'utf8'));
 let win = null;
 let errHeight = 0;
 
+let screenSize = {};
+
 app.whenReady().then(() => {
     const primaryDisplay = screen.getPrimaryDisplay();
-    const { width, height } = primaryDisplay.workAreaSize;
+    screenSize = primaryDisplay.workAreaSize;
 
-    let posX = config.bounds.x;
-    let posY = config.bounds.y;
+    let initialPosX = config.bounds.x;
+    let initialPosY = config.bounds.y;
 
     win = new BrowserWindow({
         width: 150,
         height: 40,
-        x: posX,
-        y: posY,
+        x: initialPosX,
+        y: initialPosY,
         frame: false,
         alwaysOnTop: true,
         transparent: true,
@@ -36,17 +38,15 @@ app.whenReady().then(() => {
 
     win.webContents.on('did-finish-load', () => {
         setTimeout(() => {
-            let winBounds = win.getBounds();
-            if(width < posX + winBounds.x + winBounds.width || height < posY + winBounds.y + winBounds.height){
-                posX = width - winBounds.width;
-                posY = height - winBounds.height;
-                win.setBounds({
-                    x: posX, 
-                    y: posY, 
-                    width: winBounds.width, 
-                    height: winBounds.height,
-                });
-            }
+            let {posX, posY, wWidth, wHeight, update} = getWinBoundsInsideScreen(initialPosX, initialPosY);
+            if(!update) return;
+
+            win.setBounds({
+                x: posX, 
+                y: posY, 
+                width: wWidth, 
+                height: wHeight,
+            });
         }, 100);
     });
 
@@ -54,7 +54,10 @@ app.whenReady().then(() => {
     win.on('move', () => {
         clearTimeout(t);
         t = setTimeout(() => {
-            const bounds = win.getBounds();
+            let {posX, posY, wWidth, wHeight, update} = getWinBoundsInsideScreen();
+            let bounds = {x: posX, y: posY, width: wWidth, height: wHeight};
+            if(update) win.setBounds(bounds);
+
             config.bounds = {x: bounds.x, y: bounds.y + errHeight};
             updateConfig(config);
         }, 1000);
@@ -75,6 +78,35 @@ app.whenReady().then(() => {
         }, 100);
     });
 });
+
+function getWinBoundsInsideScreen(posX, posY){
+    let winBounds = win.getBounds();
+    let update = false;
+
+    if(typeof posX === 'undefined') posX = winBounds.x;
+    if(typeof posY === 'undefined') posY = winBounds.y;
+
+    let width = screenSize.width;
+    let height = screenSize.height;
+
+    if(width < posX + winBounds.width){
+        posX = width - winBounds.width;
+        update = true;
+    }
+
+    if(height < posY + winBounds.height){
+        posY = height - winBounds.height;
+        update = true;
+    }
+
+    return {
+        posX, 
+        posY, 
+        wWidth: winBounds.width, 
+        wHeight: winBounds.height, 
+        update,
+    };
+}
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
